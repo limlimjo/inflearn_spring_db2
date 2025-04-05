@@ -56,6 +56,21 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// Querydsl Q타입 생성 경로 설정
+def generated = 'src/main/generated'
+
+sourceSets {
+	main {
+		java {
+			srcDirs += [generated]
+		}
+	}
+}
+
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
+
 //Querydsl 추가, 자동 생성된 Q클래스 gradle clean으로 제거
 clean {
 	delete file('src/main/generated')
