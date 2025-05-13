@@ -87,4 +87,26 @@ public class BasicTxTest {
         log.info("트랜잭션2 커밋");
         txManager.rollback(tx2);
     }
+
+    // 트랜잭션 기본 원칙
+    // 1. 모든 논리 트랜잭션이 커밋되어야 물리 트랜잭션이 커밋됨
+    // 2. 하나의 논리 트랜잭션이라도 롤백되면 물리 트랝객션을 롤백됨
+    @Test
+    void inner_commit() {
+        // 외부 트랜잭션과 내부 트랜잭션 각각이 논리 트랜잭션이라고 보면 되고,
+        // 두 개의 트랜잭션이 하나의 물리 트랜잭션으로 묶이는 것임
+
+        log.info("외부 트랜잭션 시작");
+        TransactionStatus outer = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("outer.isNewTransaction=()={}", outer.isNewTransaction()); // true
+
+        log.info("내부 트랜잭션 시작");
+        TransactionStatus inner = txManager.getTransaction(new DefaultTransactionAttribute());
+        log.info("inner.isNewTransaction=()={}", inner.isNewTransaction()); // false
+        log.info("내부 트랜잭션 커밋");
+        txManager.commit(inner);
+
+        log.info("외부 트랜잭션 커밋");
+        txManager.commit(outer);
+    }
 }
